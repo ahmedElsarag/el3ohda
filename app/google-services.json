@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "169848256292",
+    "firebase_url": "https://secret-notes-22525.firebaseio.com",
+    "project_id": "secret-notes-22525",
+    "storage_bucket": "secret-notes-22525.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:169848256292:android:14702f85b67ee06aa925b1",
+        "android_client_info": {
+          "package_name": "com.example.secretnotes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "169848256292-m004roin1ghgh30spvhjgtbbkmnvpnob.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.secretnotes",
+            "certificate_hash": "1c483ffed59543856a5de78c87bbab5029295c36"
+          }
+        },
+        {
+          "client_id": "169848256292-vcmefg1ikp0q446m0hd1v8eoo5p1cl0k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANDK_C3Utz2aXfvtB0Vc8M4V_e9wfcP-Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "169848256292-vcmefg1ikp0q446m0hd1v8eoo5p1cl0k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

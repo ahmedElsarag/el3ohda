@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".AddNotesFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@drawable/topbar"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/save_btn"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="@android:color/white"
+            app:srcCompat="@drawable/ic_done_black_24dp" />
+
+        <EditText
+            android:id="@+id/notes_title"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/note_title"
+            android:gravity="center"
+            android:hint="Tiltle"
+            android:textColorHint="@android:color/white"
+            android:textColor="@android:color/white"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:padding="8dp" />
+
+        <ImageButton
+            android:id="@+id/cancel"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="@android:color/white"
+            app:srcCompat="@drawable/ic_close_black_24dp" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/notes_desc"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5"
+        android:background="@drawable/note"
+        android:gravity="top|left"
+        android:hint="Write what you want"
+        android:textColorHint="@android:color/white"
+        android:textColor="@android:color/white"
+        android:importantForAutofill="no"
+        android:inputType="textMultiLine"
+        android:overScrollMode="always"
+        android:padding="8dp"
+        android:scrollbarStyle="insideInset"
+        android:scrollbars="vertical"
+        android:scrollHorizontally="false"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+</LinearLayout>
