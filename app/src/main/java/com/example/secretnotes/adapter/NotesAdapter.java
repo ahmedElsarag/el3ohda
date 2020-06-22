@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesHolder> {
-
     Context context;
     List<UserNote> list = new ArrayList<>();
     private RecyclerViewClickListener listener;
@@ -65,9 +64,8 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesHolder>
     }
 
     public class NotesHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-
         TextView title , desc , date;
-        ImageView edit , delete;
+        ImageView edit ;
         ShimmerFrameLayout shimmerFrameLayout;
         private RecyclerViewClickListener mListener;
 
@@ -78,24 +76,19 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesHolder>
             desc = itemView.findViewById(R.id.desc);
             date = itemView.findViewById(R.id.date);
             edit = itemView.findViewById(R.id.edit);
-            delete = itemView.findViewById(R.id.delete);
             shimmerFrameLayout = itemView.findViewById(R.id.shimmer_layout);
             edit.setOnClickListener(this);
-            delete.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
             if(view.getId() == R.id.edit)
                 mListener.editClick(getAdapterPosition());
-            else
-                mListener.deleteClick(getAdapterPosition());
         }
     }
 
     public interface RecyclerViewClickListener {
 
         void editClick(int position);
-        void deleteClick(int position);
     }
 }

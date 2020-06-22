@@ -14,10 +14,11 @@
         <View
             android:layout_width="8dp"
             android:layout_height="8dp"
-            android:layout_marginEnd="-5dp"
-            android:background="@drawable/viewshape"
+            android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"/>
+            android:layout_marginEnd="-5dp"
+            android:background="@drawable/viewshape" />
+
         <View
             android:id="@+id/divider"
             android:layout_width="1dp"
@@ -38,7 +39,12 @@
         <com.facebook.shimmer.ShimmerFrameLayout
             android:id="@+id/shimmer_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            app:shimmer_base_alpha="1"
+            app:shimmer_highlight_alpha="0"
+            app:shimmer_duration="2000"
+            app:shimmer_dropoff="0.1"
+            app:shimmer_tilt="45">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -51,7 +57,7 @@
                     android:id="@+id/title"
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
-                    android:background="@color/shimmer"
+                    android:background="@color/black"
                     android:textColor="@android:color/white"
                     android:textSize="18sp" />
 
@@ -60,7 +66,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:background="@color/shimmer"
+                    android:background="@color/black"
                     android:maxLines="4"
                     android:textColor="@android:color/white"
                     android:textSize="15sp" />
@@ -76,9 +82,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="50dp"
-                        android:textColor="@android:color/white"
                         android:layout_weight="1"
-                        android:background="@color/shimmer"
+                        android:background="@color/black"
+                        android:textColor="@android:color/white"
                         android:textSize="15sp" />
 
                     <ImageView
@@ -87,16 +93,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginRight="20dp"
                         android:contentDescription="edit"
-                        android:tint="@color/colorPrimary"
-                        android:src="@drawable/ic_edit" />
+                        android:src="@drawable/ic_edit"
+                        android:tint="@color/colorPrimary" />
 
-                    <ImageView
-                        android:id="@+id/delete"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:contentDescription="delete"
-                        android:tint="@color/colorPrimary"
-                        android:src="@drawable/ic_delete" />
                 </LinearLayout>
 
 

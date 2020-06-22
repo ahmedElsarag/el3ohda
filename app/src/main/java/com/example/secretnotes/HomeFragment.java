@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,6 +24,8 @@ import com.example.secretnotes.data.UserNote;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -54,7 +57,6 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -68,16 +70,21 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
 
         databaseNotesReference = FirebaseDatabase.getInstance().getReference("USERNOTES").child(uId);
 
-        allNotes = new ArrayList<>();
-        notesKey = new ArrayList<>();
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setHasFixedSize(true);
-        notesAdapter = new NotesAdapter(getContext(),allNotes,this);
-        recyclerView.setAdapter(notesAdapter);
+        intiateRecyclerView();
 
         readNotes();
 
         return view;
+    }
+
+    public void intiateRecyclerView() {
+        allNotes = new ArrayList<>();
+        notesKey = new ArrayList<>();
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setHasFixedSize(true);
+        notesAdapter = new NotesAdapter(getContext(), allNotes, this);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
+        recyclerView.setAdapter(notesAdapter);
     }
 
     public void readNotes() {
@@ -96,22 +103,16 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 UserNote userNote = dataSnapshot.getValue(UserNote.class);
-                String key =dataSnapshot.getKey();
+                String key = dataSnapshot.getKey();
                 int index = notesKey.indexOf(key);
 
-                allNotes.set(index,userNote);
+                allNotes.set(index, userNote);
                 notesAdapter.notifyDataSetChanged();
                 notesAdapter.isShimmer = false;
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                String key = dataSnapshot.getKey();
-                int index = notesKey.indexOf(key);
-                allNotes.remove(index);
-                notesAdapter.notifyDataSetChanged();
-                notesAdapter.isShimmer = false;
             }
 
             @Override
@@ -128,16 +129,34 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
 
     @Override
     public void editClick(int position) {
-        ((NavigationHost)(getActivity())).navigateTo(new AddNotesFragment(),true);
-        Variables.isAdd=false;
-        Variables.pos=position;
+        ((NavigationHost) (getActivity())).navigateTo(new AddNotesFragment(), true);
+        Variables.isAdd = false;
+        Variables.pos = position;
     }
 
-    @Override
-    public void deleteClick(int position) {
-        confirmationDialog(position);
-    }
-    public void confirmationDialog(final int position){
+    // delete note when swipe left
+    ItemTouchHelper.SimpleCallback itemTouchHelperCallback =
+            new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+                @Override
+                public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                    return false;
+                }
+
+                @Override
+                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                    final int position = viewHolder.getAdapterPosition();
+                    final String deletednoteId = allNotes.get(position).getNoteID();
+                    final UserNote userNote =
+                            new UserNote(allNotes.get(position).getNoteTitle(), allNotes.get(position).getNoteDesc(), allNotes.get(position).getNoteDate(), allNotes.get(position).getNoteID());
+                    allNotes.remove(position);
+                    notesAdapter.notifyDataSetChanged();
+                    confirmationDialog(position,userNote,deletednoteId);
+
+                }
+            };
+
+    public void confirmationDialog(final int position,final UserNote userNote,final String deletedNoteId) {
+        SweetAlertDialog.DARK_STYLE = true;
         // 2. Confirmation message
         new SweetAlertDialog(getContext(), SweetAlertDialog.WARNING_TYPE)
                 .setTitleText("Are you sure?")
@@ -146,13 +165,13 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
                 .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
                     public void onClick(SweetAlertDialog sDialog) {
-                        databaseNotesReference.child(allNotes.get(position).getNoteID()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        databaseNotesReference.child(deletedNoteId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful())
-                                    Toast.makeText(getContext(),"done",Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getContext(), "done", Toast.LENGTH_LONG).show();
                                 else
-                                    Toast.makeText(getContext(),"error",Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getContext(), "error", Toast.LENGTH_LONG).show();
                             }
                         });
                         sDialog.dismissWithAnimation();
@@ -162,10 +181,10 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
                     @Override
                     public void onClick(SweetAlertDialog sDialog) {
                         sDialog.dismissWithAnimation();
+                        allNotes.add(position,userNote);
+                        notesAdapter.notifyDataSetChanged();
                     }
                 })
                 .show();
     }
-
-
 }
