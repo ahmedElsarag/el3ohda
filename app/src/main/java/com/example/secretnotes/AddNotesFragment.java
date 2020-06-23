@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.secretnotes.data.UserNote;
+import com.example.secretnotes.databinding.FragmentAddNotesBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
@@ -29,12 +30,11 @@ import java.util.Calendar;
  */
 public class AddNotesFragment extends Fragment implements View.OnClickListener {
 
+    FragmentAddNotesBinding binding;
     DatabaseReference databaseNotesReference;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
     String uId;
-    ImageButton saveBtn,cancelBtn;
-    TextView notesTitle, notesDesc;
 
     public AddNotesFragment() {
         // Required empty public constructor
@@ -43,34 +43,30 @@ public class AddNotesFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-           View view = inflater.inflate(R.layout.fragment_add_notes, container, false);
+           binding = FragmentAddNotesBinding.inflate(getLayoutInflater());
 
         sharedPreferences = getActivity().getSharedPreferences("FireNotesData", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
         uId = sharedPreferences.getString("UID","");
 
-        saveBtn = view.findViewById(R.id.save_btn);
-        cancelBtn = view.findViewById(R.id.cancel);
-        notesTitle = view.findViewById(R.id.notes_title);
-        notesDesc = view.findViewById(R.id.notes_desc);
-        saveBtn.setOnClickListener(this);
-        cancelBtn.setOnClickListener(this);
+        binding.saveBtn.setOnClickListener(this);
+        binding.cancelBtn.setOnClickListener(this);
 
         databaseNotesReference = FirebaseDatabase.getInstance().getReference("USERNOTES").child(uId);
 
         if (!Variables.isAdd){
-            notesTitle.setText(HomeFragment.allNotes.get(Variables.pos).getNoteTitle());
-            notesDesc.setText(HomeFragment.allNotes.get(Variables.pos).getNoteDesc());
+            binding.notesTitle.setText(HomeFragment.allNotes.get(Variables.pos).getNoteTitle());
+            binding.notesDesc.setText(HomeFragment.allNotes.get(Variables.pos).getNoteDesc());
         }
-        return view;
+        return binding.getRoot();
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.save_btn:{
-                String title = notesTitle.getText().toString();
-                String desc = notesDesc.getText().toString();
+                String title = binding.notesTitle.getText().toString();
+                String desc = binding.notesDesc.getText().toString();
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
                 Calendar calendar = Calendar.getInstance();
                 String todayDate = dateFormat.format(calendar.getTime());
@@ -94,7 +90,7 @@ public class AddNotesFragment extends Fragment implements View.OnClickListener {
 
                 break;
             }
-            case R.id.cancel:{
+            case R.id.cancel_btn:{
                 ((NavigationHost)getActivity()).navigateTo(new HomeFragment(),false);
                 break;
             }

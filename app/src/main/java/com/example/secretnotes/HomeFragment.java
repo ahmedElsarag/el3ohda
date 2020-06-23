@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.example.secretnotes.adapter.NotesAdapter;
 import com.example.secretnotes.data.UserNote;
+import com.example.secretnotes.databinding.FragmentHomeBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
@@ -45,13 +46,13 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
  */
 public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewClickListener {
 
+    FragmentHomeBinding binding;
     SharedPreferences sharedPreferences;
     DatabaseReference databaseNotesReference;
     String uId;
     public static List<UserNote> allNotes;
     List<String> notesKey;
     NotesAdapter notesAdapter;
-    RecyclerView recyclerView;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -61,9 +62,7 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
-
-        recyclerView = view.findViewById(R.id.recycler);
+        binding = FragmentHomeBinding.inflate(getLayoutInflater());
 
         sharedPreferences = getActivity().getSharedPreferences("FireNotesData", Context.MODE_PRIVATE);
         uId = sharedPreferences.getString("UID", "");
@@ -74,17 +73,17 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
 
         readNotes();
 
-        return view;
+        return binding.getRoot();
     }
 
     public void intiateRecyclerView() {
         allNotes = new ArrayList<>();
         notesKey = new ArrayList<>();
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setHasFixedSize(true);
+        binding.recycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.recycler.setHasFixedSize(true);
         notesAdapter = new NotesAdapter(getContext(), allNotes, this);
-        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
-        recyclerView.setAdapter(notesAdapter);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(binding.recycler);
+        binding.recycler.setAdapter(notesAdapter);
     }
 
     public void readNotes() {

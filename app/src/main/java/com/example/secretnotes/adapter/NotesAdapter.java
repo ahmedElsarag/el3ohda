@@ -8,10 +8,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.secretnotes.R;
 import com.example.secretnotes.data.UserNote;
+import com.example.secretnotes.databinding.CardNoteBinding;
 import com.facebook.shimmer.ShimmerFrameLayout;
 
 import java.util.ArrayList;
@@ -34,24 +36,25 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesHolder>
     @NonNull
     @Override
     public NotesHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.card_note,parent,false);
-        return new NotesHolder(view,listener);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        CardNoteBinding binding = DataBindingUtil.inflate(inflater,R.layout.card_note,parent,false);
+        return new NotesHolder(binding,listener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull NotesHolder holder, int position) {
 
         if (isShimmer){
-            holder.shimmerFrameLayout.startShimmer();
+            holder.binding.shimmerLayout.startShimmer();
         }else {
-            holder.shimmerFrameLayout.stopShimmer();
-            holder.shimmerFrameLayout.setShimmer(null);
-            holder.title.setText(list.get(position).getNoteTitle());
-            holder.title.setBackground(null);
-            holder.desc.setText(list.get(position).getNoteDesc());
-            holder.desc.setBackground(null);
-            holder.date.setText(list.get(position).getNoteDate());
-            holder.date.setBackground(null);
+            holder.binding.shimmerLayout.stopShimmer();
+            holder.binding.shimmerLayout.setShimmer(null);
+            holder.binding.title.setText(list.get(position).getNoteTitle());
+            holder.binding.title.setBackground(null);
+            holder.binding.desc.setText(list.get(position).getNoteDesc());
+            holder.binding.desc.setBackground(null);
+            holder.binding.date.setText(list.get(position).getNoteDate());
+            holder.binding.date.setBackground(null);
         }
 
 
@@ -64,20 +67,14 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesHolder>
     }
 
     public class NotesHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        TextView title , desc , date;
-        ImageView edit ;
-        ShimmerFrameLayout shimmerFrameLayout;
+        CardNoteBinding binding;
         private RecyclerViewClickListener mListener;
 
-        public NotesHolder(@NonNull View itemView ,RecyclerViewClickListener mListener) {
-            super(itemView);
+        public NotesHolder(@NonNull CardNoteBinding binding ,RecyclerViewClickListener mListener) {
+            super(binding.getRoot());
+            this.binding = binding;
             this.mListener = mListener;
-            title = itemView.findViewById(R.id.title);
-            desc = itemView.findViewById(R.id.desc);
-            date = itemView.findViewById(R.id.date);
-            edit = itemView.findViewById(R.id.edit);
-            shimmerFrameLayout = itemView.findViewById(R.id.shimmer_layout);
-            edit.setOnClickListener(this);
+            binding.edit.setOnClickListener(this);
         }
 
         @Override

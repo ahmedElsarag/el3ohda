@@ -1,105 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    xmlns:tools="http://schemas.android.com/tools">
 
-
-    <RelativeLayout
-        android:layout_width="40dp"
-        android:layout_height="match_parent">
-
-        <View
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="-5dp"
-            android:background="@drawable/viewshape" />
-
-        <View
-            android:id="@+id/divider"
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:layout_centerHorizontal="true"
-            android:background="@color/overlay_white3" />
-    </RelativeLayout>
-
-
-    <com.google.android.material.card.MaterialCardView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        tools:ignore="MissingDefaultResource">
+        android:orientation="horizontal">
 
-        <com.facebook.shimmer.ShimmerFrameLayout
-            android:id="@+id/shimmer_layout"
+
+        <RelativeLayout
+            android:layout_width="40dp"
+            android:layout_height="match_parent">
+
+            <View
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="-5dp"
+                android:background="@drawable/viewshape" />
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:background="@color/overlay_white3" />
+        </RelativeLayout>
+
+
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:shimmer_base_alpha="1"
-            app:shimmer_highlight_alpha="0"
-            app:shimmer_duration="2000"
-            app:shimmer_dropoff="0.1"
-            app:shimmer_tilt="45">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            tools:ignore="MissingDefaultResource">
 
-            <LinearLayout
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmer_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/surface"
-                android:orientation="vertical"
-                android:padding="14dp">
-
-                <TextView
-                    android:id="@+id/title"
-                    android:layout_width="200dp"
-                    android:layout_height="wrap_content"
-                    android:background="@color/black"
-                    android:textColor="@android:color/white"
-                    android:textSize="18sp" />
-
-                <TextView
-                    android:id="@+id/desc"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:background="@color/black"
-                    android:maxLines="4"
-                    android:textColor="@android:color/white"
-                    android:textSize="15sp" />
+                android:layout_height="match_parent"
+                app:shimmer_base_alpha="1"
+                app:shimmer_dropoff="0.1"
+                app:shimmer_duration="2000"
+                app:shimmer_highlight_alpha="0"
+                app:shimmer_tilt="45">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:orientation="horizontal">
+                    android:background="@color/surface"
+                    android:orientation="vertical"
+                    android:padding="14dp">
 
                     <TextView
-                        android:id="@+id/date"
-                        android:layout_width="0dp"
+                        android:id="@+id/title"
+                        android:layout_width="200dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="50dp"
-                        android:layout_weight="1"
                         android:background="@color/black"
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/desc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:background="@color/black"
+                        android:maxLines="4"
                         android:textColor="@android:color/white"
                         android:textSize="15sp" />
 
-                    <ImageView
-                        android:id="@+id/edit"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="20dp"
-                        android:contentDescription="edit"
-                        android:src="@drawable/ic_edit"
-                        android:tint="@color/colorPrimary" />
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/date"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="50dp"
+                            android:layout_weight="1"
+                            android:background="@color/black"
+                            android:textColor="@android:color/white"
+                            android:textSize="15sp" />
+
+                        <ImageView
+                            android:id="@+id/edit"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="20dp"
+                            android:contentDescription="edit"
+                            android:src="@drawable/ic_edit"
+                            android:tint="@color/colorPrimary" />
+
+                    </LinearLayout>
+
 
                 </LinearLayout>
-
-
-            </LinearLayout>
-        </com.facebook.shimmer.ShimmerFrameLayout>
-    </com.google.android.material.card.MaterialCardView>
-</LinearLayout>
+            </com.facebook.shimmer.ShimmerFrameLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+</layout>
