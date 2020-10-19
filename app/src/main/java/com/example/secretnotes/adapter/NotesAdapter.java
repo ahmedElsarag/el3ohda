@@ -23,7 +23,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesHolder>
     Context context;
     List<UserNote> list = new ArrayList<>();
     private RecyclerViewClickListener listener;
-   public boolean isShimmer = true;
+    public boolean isShimmer = true;
     int shimmerNum = 5;
 
 
@@ -37,16 +37,16 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesHolder>
     @Override
     public NotesHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        CardNoteBinding binding = DataBindingUtil.inflate(inflater,R.layout.card_note,parent,false);
-        return new NotesHolder(binding,listener);
+        CardNoteBinding binding = DataBindingUtil.inflate(inflater, R.layout.card_note, parent, false);
+        return new NotesHolder(binding, listener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull NotesHolder holder, int position) {
 
-        if (isShimmer){
+        if (isShimmer) {
             holder.binding.shimmerLayout.startShimmer();
-        }else {
+        } else {
             holder.binding.shimmerLayout.stopShimmer();
             holder.binding.shimmerLayout.setShimmer(null);
             holder.binding.title.setText(list.get(position).getNoteTitle());
@@ -58,34 +58,38 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesHolder>
         }
 
 
-
     }
 
     @Override
     public int getItemCount() {
-        return isShimmer?shimmerNum:list.size();
+        return isShimmer ? shimmerNum : list.size();
     }
 
-    public class NotesHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class NotesHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         CardNoteBinding binding;
         private RecyclerViewClickListener mListener;
 
-        public NotesHolder(@NonNull CardNoteBinding binding ,RecyclerViewClickListener mListener) {
+        public NotesHolder(@NonNull CardNoteBinding binding, RecyclerViewClickListener mListener) {
             super(binding.getRoot());
             this.binding = binding;
             this.mListener = mListener;
             binding.edit.setOnClickListener(this);
+            binding.noteItem.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            if(view.getId() == R.id.edit)
+            if (view.getId() == R.id.note_item)
                 mListener.editClick(getAdapterPosition());
+            else
+                mListener.addToFavorit(getAdapterPosition(), binding.edit);
         }
     }
 
     public interface RecyclerViewClickListener {
 
         void editClick(int position);
+
+        void addToFavorit(int position, ImageView imageView);
     }
 }

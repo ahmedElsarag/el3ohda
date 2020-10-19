@@ -33,6 +33,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private static final String TAG = "LoginActivity";
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
+    SweetAlertDialog pDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,15 +85,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                     Log.d(TAG, "ahmed: " + task.getException().getMessage());
                                     String error = task.getException().getMessage();
                                     Toast.makeText(LoginActivity.this, "error : " + error, Toast.LENGTH_LONG).show();
+                                    pDialog.dismissWithAnimation();
                                 }
                             }
                         });
 
                     } else {
                         binding.usernameInputLayout.setError("wrong email");
+                        pDialog.dismissWithAnimation();
                     }
                 } else {
                     binding.passwordInputLayout.setError("this is a wrong password");
+                    pDialog.dismissWithAnimation();
                 }
 
                 break;
@@ -124,7 +128,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void loadDialog() {
-        SweetAlertDialog pDialog = new SweetAlertDialog(LoginActivity.this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog = new SweetAlertDialog(LoginActivity.this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(getResources().getColor(R.color.colorPrimary));
         pDialog.setTitleText("Loading ...");
         pDialog.setCancelable(true);

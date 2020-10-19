@@ -5,4 +5,5 @@ public class Variables {
     //variables for update
     public static boolean isAdd = false;
     public static int pos = 0;
+    public static String uId;
 }

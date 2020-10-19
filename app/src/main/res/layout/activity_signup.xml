@@ -23,7 +23,7 @@
             android:fontFamily="@font/bungee"
             android:text="@string/new_user"
             android:textColor="@android:color/white"
-            android:textSize="40sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -88,6 +88,7 @@
                     android:id="@+id/password_text_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
