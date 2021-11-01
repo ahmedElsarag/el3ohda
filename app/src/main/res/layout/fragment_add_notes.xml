@@ -6,7 +6,8 @@
     tools:context=".AddNotesFragment">
 
     <LinearLayout
-
+        android:layoutDirection="rtl"
+        android:textDirection="rtl"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -23,7 +24,7 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:tint="@android:color/white"
-                app:srcCompat="@drawable/ic_done_black_24dp" />
+                app:srcCompat="@drawable/ic_baseline_done_24" />
 
             <EditText
                 android:id="@+id/notes_title"
@@ -32,7 +33,8 @@
                 android:layout_weight="1"
                 android:background="@drawable/note_title"
                 android:gravity="center"
-                android:hint="Tiltle"
+                android:hint="اسم العهدة"
+                android:fontFamily="@font/cairo"
                 android:importantForAutofill="no"
                 android:inputType="text"
                 android:padding="8dp"
@@ -48,14 +50,113 @@
                 app:srcCompat="@drawable/ic_close_black_24dp" />
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/total_amount"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/note"
+                android:gravity="top|right"
+                android:hint="الكمية الكلية"
+                android:fontFamily="@font/cairo_bold"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine"
+                android:overScrollMode="always"
+                android:padding="8dp"
+                android:scrollbarStyle="insideInset"
+                android:scrollbars="vertical"
+                android:scrollHorizontally="false"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white" />
+
+            <EditText
+                android:id="@+id/added_total"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/note"
+                android:gravity="top|right"
+                android:visibility="gone"
+                android:hint="اضف علي الموجود"
+                android:fontFamily="@font/cairo_bold"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine"
+                android:overScrollMode="always"
+                android:padding="8dp"
+                android:scrollbarStyle="insideInset"
+                android:scrollbars="vertical"
+                android:scrollHorizontally="false"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/current_amount"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/note"
+                android:gravity="top|right"
+                android:hint="المنصرف"
+                android:fontFamily="@font/cairo_bold"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine"
+                android:overScrollMode="always"
+                android:padding="8dp"
+                android:scrollbarStyle="insideInset"
+                android:scrollbars="vertical"
+                android:scrollHorizontally="false"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white" />
+            <EditText
+                android:id="@+id/added_amount"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/note"
+                android:visibility="gone"
+                android:gravity="top|right"
+                android:hint="اضف علي المنصرف"
+                android:fontFamily="@font/cairo_bold"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine"
+                android:overScrollMode="always"
+                android:padding="8dp"
+                android:scrollbarStyle="insideInset"
+                android:scrollbars="vertical"
+                android:scrollHorizontally="false"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white" />
+
+        </LinearLayout>
+
+
         <EditText
             android:id="@+id/notes_desc"
+            android:textDirection="rtl"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="5"
             android:background="@drawable/note"
-            android:gravity="top|left"
-            android:hint="Write what you want"
+            android:gravity="top|right"
+            android:hint="ملحوظة"
+            android:fontFamily="@font/cairo_bold"
             android:importantForAutofill="no"
             android:inputType="textMultiLine"
             android:overScrollMode="always"

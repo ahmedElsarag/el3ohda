@@ -1,6 +1,7 @@
 package com.example.secretnotes;
 
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.view.SurfaceControl;
 import android.view.View;
 
@@ -21,7 +22,6 @@ public class ContainerActivity extends AppCompatActivity implements View.OnClick
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_countainer);
-
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new HomeFragment()).commit();
 
         binding.addBtn.setOnClickListener(this);

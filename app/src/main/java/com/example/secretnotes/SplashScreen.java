@@ -35,7 +35,7 @@ public class SplashScreen extends AppCompatActivity {
         topAnim= AnimationUtils.loadAnimation(this,R.anim.top);
         bottomAnim= AnimationUtils.loadAnimation(this,R.anim.bottom);
 
-        binding.imageView.setAnimation(topAnim);
+        //binding.imageView.setAnimation(topAnim);
         binding.textView.setAnimation(bottomAnim);
         binding.textView2.setAnimation(bottomAnim);
 
@@ -51,7 +51,7 @@ public class SplashScreen extends AppCompatActivity {
                 }
                 finish();
             }
-        },2000);
+        },3000);
 
     }
 }

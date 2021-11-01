@@ -6,6 +6,7 @@
     <color name="surface">#121212</color>
     <color name="black">#000000</color>
     <color name="colorAccent">#03DAC5</color>
+    <color name="alertColor">#8B0000</color>
 
 
     <color name="overlay_dark_10">#1A000000</color>
@@ -21,4 +22,5 @@
     <color name="overlay_white">#33E1DDDD</color>
     <color name="overlay_white2">#49D5D0D0</color>
     <color name="overlay_white3">#52C8C2C2</color>
+    <color name="white">#FFFFFF</color>
 </resources>

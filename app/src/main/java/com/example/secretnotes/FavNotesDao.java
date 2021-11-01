@@ -21,4 +21,7 @@ public interface FavNotesDao {
 
     @Query("select * from notes_table")
     Single<List<FavNotes>> getNotes();
+
+    @Query("DELETE FROM notes_table WHERE noteID = :noteId")
+     Completable deleteById(String noteId);
 }

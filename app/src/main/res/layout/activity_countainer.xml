@@ -6,6 +6,7 @@
     tools:context=".ContainerActivity">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layoutDirection="rtl"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -13,14 +14,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
-                <FrameLayout
-                    android:id="@+id/fragment_container"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <FrameLayout
+                android:id="@+id/fragment_container"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.bottomappbar.BottomAppBar
@@ -32,9 +34,9 @@
             app:contentInsetEnd="0dp"
             app:contentInsetStart="0dp"
             app:fabCradleMargin="10dp"
-            app:fabCradleRoundedCornerRadius="20dp"
-            app:fabCradleVerticalOffset="10dp"
-            android:backgroundTint="@color/surface"
+            app:fabCradleRoundedCornerRadius="100dp"
+            app:fabCradleVerticalOffset="0dp"
+            android:backgroundTint="#D9BB86FC"
             app:elevation="8dp"
             app:hideOnScroll="true">
 

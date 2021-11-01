@@ -24,6 +24,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,6 +37,9 @@ public class AddNotesFragment extends Fragment implements View.OnClickListener {
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
     String uId;
+    boolean isLiked;
+    int afterUpdateTotal,afterUpdateDepart;
+    SweetAlertDialog pDialog;
 
     public AddNotesFragment() {
         // Required empty public constructor
@@ -57,6 +62,12 @@ public class AddNotesFragment extends Fragment implements View.OnClickListener {
         if (!Variables.isAdd){
             binding.notesTitle.setText(HomeFragment.allNotes.get(Variables.pos).getNoteTitle());
             binding.notesDesc.setText(HomeFragment.allNotes.get(Variables.pos).getNoteDesc());
+            binding.totalAmount.setText(HomeFragment.allNotes.get(Variables.pos).getTotalAmount());
+            binding.currentAmount.setText(HomeFragment.allNotes.get(Variables.pos).getCurrentAmount());
+            isLiked = HomeFragment.allNotes.get(Variables.pos).isLiked();
+            binding.addedTotal.setVisibility(View.VISIBLE);
+            binding.addedAmount.setVisibility(View.VISIBLE);
+
         }
         return binding.getRoot();
     }
@@ -70,21 +81,39 @@ public class AddNotesFragment extends Fragment implements View.OnClickListener {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
                 Calendar calendar = Calendar.getInstance();
                 String todayDate = dateFormat.format(calendar.getTime());
-
+                String totalAmount = binding.totalAmount.getText().toString();
+                String currentAmount = binding.currentAmount.getText().toString();
 
                 if(!Variables.isAdd){
+                    String addedAmount = binding.addedAmount.getText().toString();
+                    String addedTotal = binding.addedTotal.getText().toString();
+                    if (!addedTotal.isEmpty() && addedTotal!=null){
+                        afterUpdateTotal = Integer.parseInt(totalAmount)+Integer.parseInt(addedTotal);
+                    }else {
+                        afterUpdateTotal = Integer.parseInt(totalAmount);
+                    }
+
+                    if (!addedAmount.isEmpty() && addedAmount!=null){
+                        afterUpdateDepart = Integer.parseInt(currentAmount)+Integer.parseInt(addedAmount);
+                    }else {
+                        afterUpdateDepart = Integer.parseInt(currentAmount);
+                    }
+
                     String key = HomeFragment.allNotes.get(Variables.pos).getNoteID();
-                    UserNote userNote = new UserNote(title,desc,todayDate,key);
+                    // TODO: 8/5/2021 change false value
+                    UserNote userNote = new UserNote(title,desc,todayDate,key,Integer.toString(afterUpdateTotal),Integer.toString(afterUpdateDepart),isLiked);
+                    loadDialog();
                     updaeNote(userNote,key);
                 }else{
                     if(!title.equalsIgnoreCase("") && !desc
                             .equalsIgnoreCase("")){
                         String key = databaseNotesReference.push().getKey();
-                        UserNote userNote = new UserNote(title,desc,todayDate,key);
+                        UserNote userNote = new UserNote(title,desc,todayDate,key,totalAmount,currentAmount,false);
+                        loadDialog();
                         addNotes(key,userNote);
 
                     }else {
-                        Toast.makeText(getContext(),"make sure to fill all fieldes",Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(),"قم بادخال جميع البيانات المطلوبة",Toast.LENGTH_LONG).show();
                     }
                 }
 
@@ -103,10 +132,12 @@ public class AddNotesFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
-                    Toast.makeText(getContext(),"note saved successfully",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(),"تمت الأضافة بنجاح",Toast.LENGTH_LONG).show();
                     ((NavigationHost)getActivity()).navigateTo(new HomeFragment(),false);
+                    pDialog.dismissWithAnimation();
                 }else {
-                    Toast.makeText(getContext(),"there is an error occuared",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(),"حدث خطأ لم تتم الأضافة",Toast.LENGTH_LONG).show();
+                    pDialog.dismissWithAnimation();
                 }
             }
         });
@@ -117,12 +148,21 @@ public class AddNotesFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    Toast.makeText(getContext(), "Data updated successfully", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "تم التعديل بنجاح", Toast.LENGTH_LONG).show();
                     ((NavigationHost)getActivity()).navigateTo(new HomeFragment(),false);
+                    pDialog.dismissWithAnimation();
                 } else {
-                    Toast.makeText(getContext(), "error", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "حدث خطأ لم يتم التعديل", Toast.LENGTH_LONG).show();
+                    pDialog.dismissWithAnimation();
                 }
             }
         });
+    }
+
+    public void loadDialog() {
+        pDialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(getResources().getColor(R.color.colorPrimary));
+        pDialog.setTitleText("جاري الأضافة ...");
+        pDialog.show();
     }
 }

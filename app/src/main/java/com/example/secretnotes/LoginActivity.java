@@ -20,6 +20,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,6 +38,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     SharedPreferences.Editor editor;
     SweetAlertDialog pDialog;
 
+    DatabaseReference usersDatabaseRef;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +53,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         sharedPreferences = getSharedPreferences("FireNotesData", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
         firebaseAuth = FirebaseAuth.getInstance();
+        usersDatabaseRef = FirebaseDatabase.getInstance().getReference("USERS");
 
         binding.register.setOnClickListener(this);
         binding.loginButton.setOnClickListener(this);
@@ -76,6 +82,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 if (task.isSuccessful()) {
                                     editor.putBoolean("LOGINSTATUS", true);
                                     editor.commit();
+
+                                    //added new 6/9-----------------------------------------------
+                                    FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                                    final String userId = firebaseUser.getUid();
+                                    editor.putString("UID", userId);
+                                    editor.commit();
+                                    //-------------------------------------------------------
+
                                     Intent intent = new Intent(LoginActivity.this, ContainerActivity.class);
                                     startActivity(intent);
                                     finish();
@@ -113,13 +127,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful())
-                                Toast.makeText(LoginActivity.this, "Please check your mail", Toast.LENGTH_LONG).show();
+                                Toast.makeText(LoginActivity.this, "قم بفحص صندوق البريد الألكتروني", Toast.LENGTH_LONG).show();
                             else
-                                Toast.makeText(LoginActivity.this, "error", Toast.LENGTH_LONG).show();
+                                Toast.makeText(LoginActivity.this, "حدث خطأ", Toast.LENGTH_LONG).show();
                         }
                     });
                 } else {
-                    Toast.makeText(LoginActivity.this, "Please enter your email first", Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this, "برجاء كتابة البريد الألكتروني", Toast.LENGTH_LONG).show();
                 }
                 break;
             }
@@ -131,7 +145,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         pDialog = new SweetAlertDialog(LoginActivity.this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(getResources().getColor(R.color.colorPrimary));
         pDialog.setTitleText("Loading ...");
-        pDialog.setCancelable(true);
         pDialog.show();
     }
 

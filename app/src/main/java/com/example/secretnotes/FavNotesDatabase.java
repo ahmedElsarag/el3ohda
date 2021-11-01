@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase;
 
 import com.example.secretnotes.data.FavNotes;
 
-@Database(entities = FavNotes.class,version = 2,exportSchema = false)
+@Database(entities = FavNotes.class,version = 3,exportSchema = false)
 public abstract class FavNotesDatabase extends RoomDatabase {
 
     private static FavNotesDatabase instance;

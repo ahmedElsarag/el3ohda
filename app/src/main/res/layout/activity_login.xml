@@ -7,6 +7,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layoutDirection="rtl"
+        android:textDirection="rtl"
         android:orientation="vertical"
         android:background="@color/background"
         android:padding="20dp">
@@ -20,17 +22,17 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/bungee"
+            android:fontFamily="@font/cairo_bold"
             android:text="@string/hello"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/signin"
-            android:textColor="@android:color/white"
-            android:textSize="18sp" />
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="@string/signin"-->
+<!--            android:textColor="@android:color/white"-->
+<!--            android:textSize="18sp" />-->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -54,6 +56,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/white"
+                    android:fontFamily="@font/cairo"
                     android:inputType="textEmailAddress" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -75,6 +78,7 @@
                     android:layout_width="match_parent"
                     android:textColor="@android:color/white"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/cairo"
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -86,6 +90,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="10dp"
                 android:text="@string/forgot_pass"
+                android:fontFamily="@font/cairo"
                 android:textColor="@color/colorPrimary"
                 android:textSize="16sp" />
 
@@ -97,6 +102,7 @@
                 android:backgroundTint="@android:color/black"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
+                android:fontFamily="@font/cairo_bold"
                 android:text="@string/login" />
 
 
@@ -112,6 +118,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/no_account"
                     android:textColor="@android:color/white"
+                    android:fontFamily="@font/cairo"
                     android:textSize="16sp" />
 
                 <TextView
@@ -122,6 +129,7 @@
                     android:text="@string/register"
                     android:textColor="@color/colorPrimary"
                     android:textSize="16sp"
+                    android:fontFamily="@font/cairo"
                     android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>

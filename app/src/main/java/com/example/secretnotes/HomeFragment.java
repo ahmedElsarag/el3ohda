@@ -2,6 +2,7 @@ package com.example.secretnotes;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,10 +13,18 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Vibrator;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.secretnotes.adapter.NotesAdapter;
@@ -44,17 +53,19 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewClickListener {
+public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewClickListener, Filterable {
 
     FragmentHomeBinding binding;
     SharedPreferences sharedPreferences;
     DatabaseReference databaseNotesReference;
     String uId;
     public static List<UserNote> allNotes;
+    List<UserNote> exampleListFull;
     List<FavNotes> favoritNotes;
     List<String> notesKey;
     NotesAdapter notesAdapter;
     FavNotesDatabase database;
+    List<UserNote> filteredList;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -63,7 +74,7 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+                // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(getLayoutInflater());
 
         sharedPreferences = getActivity().getSharedPreferences("FireNotesData", Context.MODE_PRIVATE);
@@ -73,9 +84,22 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
         databaseNotesReference = FirebaseDatabase.getInstance().getReference("USERNOTES").child(uId);
 
         intiateRecyclerView();
-
         readNotes();
 
+        binding.searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                Log.d("xt","searched item = "+s);
+                getFilter().filter(s);
+                return false;
+            }
+        });
         return binding.getRoot();
     }
 
@@ -97,6 +121,7 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
                 UserNote userNote = dataSnapshot.getValue(UserNote.class);
                 String key = dataSnapshot.getKey();
                 allNotes.add(userNote);
+                exampleListFull = new ArrayList<>(allNotes);
                 notesKey.add(key);
                 notesAdapter.notifyDataSetChanged();
                 notesAdapter.isShimmer = false;
@@ -107,7 +132,13 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 UserNote userNote = dataSnapshot.getValue(UserNote.class);
                 String key = dataSnapshot.getKey();
-                int index = notesKey.indexOf(key);
+                int index=-1;
+                for (int i=0;i<allNotes.size();i++){
+                    String key2 = allNotes.get(i).getNoteID();
+                    if (key.equals(key2))
+                        index=i;
+                }
+//                int index = allNotes.indexOf(userNote);
 
                 allNotes.set(index, userNote);
                 notesAdapter.notifyDataSetChanged();
@@ -139,39 +170,69 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
 
     @Override
     public void addToFavorit(int position, ImageView imageView) {
-        String title,desc,date,id;
+        String title,desc,date,id,totalAmount,currentAmount;
         title = allNotes.get(position).getNoteTitle();
         desc = allNotes.get(position).getNoteDesc();
         date = allNotes.get(position).getNoteDate();
         id = allNotes.get(position).getNoteID();
+        totalAmount = allNotes.get(position).getTotalAmount();
+        currentAmount = allNotes.get(position).getCurrentAmount();
+        boolean isLiked = allNotes.get(position).isLiked();
+        String key = allNotes.get(position).getNoteID();
 
-        imageView.setImageResource(R.drawable.ic_favorite_black_24dp);
 
-        database = FavNotesDatabase.getInstance(getActivity());
-        database.favNotesDao().insertNotes(new FavNotes(title,desc,date,id))
-                .subscribeOn(Schedulers.computation())
-                .subscribe(new CompletableObserver() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
+        if (isLiked){
+            imageView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+            UserNote userNote = new UserNote(title,desc,date,key,totalAmount,currentAmount,false);
+            updaeNote(userNote,key);
+            database = FavNotesDatabase.getInstance(getActivity());
+            database.favNotesDao().deleteById(allNotes.get(position).getNoteID())
+                    .subscribeOn(Schedulers.computation())
+                    .subscribe(new CompletableObserver() {
+                        @Override
+                        public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
 
-                    }
+                        }
 
-                    @Override
-                    public void onComplete() {
+                        @Override
+                        public void onComplete() {
+                        }
 
-                    }
+                        @Override
+                        public void onError(@io.reactivex.annotations.NonNull Throwable e) {
 
-                    @Override
-                    public void onError(Throwable e) {
+                        }
+                    });
+        }else {
+            imageView.setImageResource(R.drawable.ic_favorite_black_24dp);
+            UserNote userNote = new UserNote(title,desc,date,key,totalAmount,currentAmount,true);
+            updaeNote(userNote,key);
 
-                    }
-                });
+            database = FavNotesDatabase.getInstance(getActivity());
+            database.favNotesDao().insertNotes(new FavNotes(title,desc,date,totalAmount,currentAmount,id))
+                    .subscribeOn(Schedulers.computation())
+                    .subscribe(new CompletableObserver() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
 
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.d("room", "onError:"+e.getMessage());
+                        }
+                    });
+        }
     }
 
     // delete note when swipe left
     ItemTouchHelper.SimpleCallback itemTouchHelperCallback =
-            new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
                 @Override
                 public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                     return false;
@@ -182,9 +243,11 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
                     final int position = viewHolder.getAdapterPosition();
                     final String deletednoteId = allNotes.get(position).getNoteID();
                     final UserNote userNote =
-                            new UserNote(allNotes.get(position).getNoteTitle(), allNotes.get(position).getNoteDesc(), allNotes.get(position).getNoteDate(), allNotes.get(position).getNoteID());
-                    allNotes.remove(position);
-                    notesKey.remove(position);
+                            new UserNote(allNotes.get(position).getNoteTitle(), allNotes.get(position).getNoteDesc(), allNotes.get(position).getNoteDate(), allNotes.get(position).getNoteID(),allNotes.get(position).getTotalAmount(),allNotes.get(position).getCurrentAmount(),allNotes.get(position).isLiked());
+                    Toast.makeText(getActivity(),"item = "+filteredList.get(position).getNoteTitle(),Toast.LENGTH_LONG).show();
+                    allNotes.remove(allNotes.indexOf(filteredList.get(position)));
+                    exampleListFull.remove(exampleListFull.indexOf(filteredList.get(position)));
+                    notesKey.remove(notesKey.indexOf(filteredList.get(position).getNoteID()));
                     notesAdapter.notifyDataSetChanged();
                     confirmationDialog(position,userNote,deletednoteId);
 
@@ -223,4 +286,51 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
                 })
                 .show();
     }
+
+    public void updaeNote(UserNote updatedNote ,String key){
+        databaseNotesReference.child(key).setValue(updatedNote).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(getActivity(), "Data updated successfully", Toast.LENGTH_LONG).show();
+                    ((NavigationHost)getActivity()).navigateTo(new HomeFragment(),false);
+                } else {
+                    Toast.makeText(getActivity(), "error", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+
+    @Override
+    public Filter getFilter() {
+        return exampleFilter;
+    }
+
+    private Filter exampleFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            filteredList = new ArrayList<>();
+            if (constraint == null || constraint.length() == 0 || constraint =="") {
+                Log.d("xe","filtered list empty"+ exampleListFull.get(1).getNoteTitle());
+                filteredList.addAll(exampleListFull);
+            } else {
+                String filterPattern = constraint.toString().toLowerCase().trim();
+                for (UserNote item : exampleListFull) {
+                    if (item.getNoteTitle().toLowerCase().contains(filterPattern)) {
+                        filteredList.add(item);
+                    }
+                }
+            }
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+            return results;
+        }
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            allNotes.clear();
+            allNotes.addAll((List) results.values);
+            notesAdapter.notifyDataSetChanged();
+        }
+    };
 }

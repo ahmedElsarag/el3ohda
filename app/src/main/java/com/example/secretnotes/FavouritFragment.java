@@ -81,7 +81,7 @@ public class FavouritFragment extends Fragment {
 
     public void intiateRecyclerView() {
         favNotes = new ArrayList<>();
-        favNotes.add(new UserNote("ahmed", "hjhjhh jhhhjh jhh", "25/10", "ghghghg"));
+        favNotes.add(new UserNote("ahmed", "hjhjhh jhhhjh jhh", "25/10", "ghghghg","5","8",false));
         binding.recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recycler.setHasFixedSize(true);
         notesAdapter = new FavoritNotesAdapter(getContext());
