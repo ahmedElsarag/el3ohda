@@ -1,7 +1,4 @@
 package com.example.secretnotes;
-
-import android.database.Observable;
-
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
