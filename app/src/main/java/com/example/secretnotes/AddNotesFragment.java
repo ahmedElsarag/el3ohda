@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.secretnotes.data.FavNotes;
 import com.example.secretnotes.data.UserNote;
 import com.example.secretnotes.databinding.FragmentAddNotesBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -25,6 +27,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import io.reactivex.CompletableObserver;
+import io.reactivex.Scheduler;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 
 /**
@@ -104,6 +110,7 @@ public class AddNotesFragment extends Fragment implements View.OnClickListener {
                     UserNote userNote = new UserNote(title,desc,todayDate,key,Integer.toString(afterUpdateTotal),Integer.toString(afterUpdateDepart),isLiked);
                     loadDialog();
                     updaeNote(userNote,key);
+
                 }else{
                     if(!title.equalsIgnoreCase("") && !desc
                             .equalsIgnoreCase("")){

@@ -5,6 +5,7 @@ import android.database.Observable;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.example.secretnotes.data.FavNotes;
 
@@ -24,4 +25,7 @@ public interface FavNotesDao {
 
     @Query("DELETE FROM notes_table WHERE noteID = :noteId")
      Completable deleteById(String noteId);
+
+    @Update
+    Completable updateItem(FavNotes favNotes);
 }

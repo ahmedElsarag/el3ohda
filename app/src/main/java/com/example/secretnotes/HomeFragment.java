@@ -53,8 +53,9 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewClickListener, Filterable {
+public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewClickListener, Filterable, View.OnClickListener {
 
+    ContainerActivity containerActivity;
     FragmentHomeBinding binding;
     SharedPreferences sharedPreferences;
     DatabaseReference databaseNotesReference;
@@ -66,6 +67,8 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
     NotesAdapter notesAdapter;
     FavNotesDatabase database;
     List<UserNote> filteredList;
+    Context context;
+    SweetAlertDialog pDialog;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -74,7 +77,7 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-                // Inflate the layout for this fragment
+        // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(getLayoutInflater());
 
         sharedPreferences = getActivity().getSharedPreferences("FireNotesData", Context.MODE_PRIVATE);
@@ -86,6 +89,7 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
         intiateRecyclerView();
         readNotes();
 
+        binding.downloadAll.setOnClickListener(this);
         binding.searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
         binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -95,7 +99,7 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
 
             @Override
             public boolean onQueryTextChange(String s) {
-                Log.d("xt","searched item = "+s);
+                Log.d("xt", "searched item = " + s);
                 getFilter().filter(s);
                 return false;
             }
@@ -103,9 +107,15 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
         return binding.getRoot();
     }
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.context = context;
+    }
+
     public void intiateRecyclerView() {
         allNotes = new ArrayList<>();
-        favoritNotes =new ArrayList<>();
+        favoritNotes = new ArrayList<>();
         notesKey = new ArrayList<>();
         binding.recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recycler.setHasFixedSize(true);
@@ -132,17 +142,37 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 UserNote userNote = dataSnapshot.getValue(UserNote.class);
                 String key = dataSnapshot.getKey();
-                int index=-1;
-                for (int i=0;i<allNotes.size();i++){
+                int index = -1;
+                for (int i = 0; i < allNotes.size(); i++) {
                     String key2 = allNotes.get(i).getNoteID();
                     if (key.equals(key2))
-                        index=i;
+                        index = i;
                 }
 //                int index = allNotes.indexOf(userNote);
 
                 allNotes.set(index, userNote);
                 notesAdapter.notifyDataSetChanged();
                 notesAdapter.isShimmer = false;
+                FavNotes favNotes = new FavNotes(userNote.getNoteTitle(), userNote.getNoteDesc(), userNote.getNoteDate(), userNote.getTotalAmount(), userNote.getCurrentAmount(), key);
+                FavNotesDatabase database = FavNotesDatabase.getInstance(getActivity());
+                database.favNotesDao().updateItem(favNotes)
+                        .subscribeOn(Schedulers.computation())
+                        .subscribe(new CompletableObserver() {
+                            @Override
+                            public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
+
+                            }
+
+                            @Override
+                            public void onComplete() {
+
+                            }
+
+                            @Override
+                            public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                                Log.d("rooom", "onError: " + e.getMessage());
+                            }
+                        });
             }
 
             @Override
@@ -170,7 +200,7 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
 
     @Override
     public void addToFavorit(int position, ImageView imageView) {
-        String title,desc,date,id,totalAmount,currentAmount;
+        String title, desc, date, id, totalAmount, currentAmount;
         title = allNotes.get(position).getNoteTitle();
         desc = allNotes.get(position).getNoteDesc();
         date = allNotes.get(position).getNoteDate();
@@ -181,10 +211,11 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
         String key = allNotes.get(position).getNoteID();
 
 
-        if (isLiked){
+        if (isLiked) {
             imageView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-            UserNote userNote = new UserNote(title,desc,date,key,totalAmount,currentAmount,false);
-            updaeNote(userNote,key);
+            UserNote userNote = new UserNote(title, desc, date, key, totalAmount, currentAmount, false);
+            updaeNote(userNote, key);
+            loadDialog();
             database = FavNotesDatabase.getInstance(getActivity());
             database.favNotesDao().deleteById(allNotes.get(position).getNoteID())
                     .subscribeOn(Schedulers.computation())
@@ -196,6 +227,7 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
 
                         @Override
                         public void onComplete() {
+                            pDialog.dismissWithAnimation();
                         }
 
                         @Override
@@ -203,13 +235,13 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
 
                         }
                     });
-        }else {
+        } else {
             imageView.setImageResource(R.drawable.ic_favorite_black_24dp);
-            UserNote userNote = new UserNote(title,desc,date,key,totalAmount,currentAmount,true);
-            updaeNote(userNote,key);
-
+            UserNote userNote = new UserNote(title, desc, date, key, totalAmount, currentAmount, true);
+            updaeNote(userNote, key);
+            loadDialog();
             database = FavNotesDatabase.getInstance(getActivity());
-            database.favNotesDao().insertNotes(new FavNotes(title,desc,date,totalAmount,currentAmount,id))
+            database.favNotesDao().insertNotes(new FavNotes(title, desc, date, totalAmount, currentAmount, id))
                     .subscribeOn(Schedulers.computation())
                     .subscribe(new CompletableObserver() {
                         @Override
@@ -219,12 +251,12 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
 
                         @Override
                         public void onComplete() {
-
+                            pDialog.dismissWithAnimation();
                         }
 
                         @Override
                         public void onError(Throwable e) {
-                            Log.d("room", "onError:"+e.getMessage());
+                            Log.d("room", "onError:" + e.getMessage());
                         }
                     });
         }
@@ -243,18 +275,18 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
                     final int position = viewHolder.getAdapterPosition();
                     final String deletednoteId = allNotes.get(position).getNoteID();
                     final UserNote userNote =
-                            new UserNote(allNotes.get(position).getNoteTitle(), allNotes.get(position).getNoteDesc(), allNotes.get(position).getNoteDate(), allNotes.get(position).getNoteID(),allNotes.get(position).getTotalAmount(),allNotes.get(position).getCurrentAmount(),allNotes.get(position).isLiked());
-                    Toast.makeText(getActivity(),"item = "+filteredList.get(position).getNoteTitle(),Toast.LENGTH_LONG).show();
+                            new UserNote(allNotes.get(position).getNoteTitle(), allNotes.get(position).getNoteDesc(), allNotes.get(position).getNoteDate(), allNotes.get(position).getNoteID(), allNotes.get(position).getTotalAmount(), allNotes.get(position).getCurrentAmount(), allNotes.get(position).isLiked());
+                    Toast.makeText(getActivity(), "item = " + filteredList.get(position).getNoteTitle(), Toast.LENGTH_LONG).show();
                     allNotes.remove(allNotes.indexOf(filteredList.get(position)));
                     exampleListFull.remove(exampleListFull.indexOf(filteredList.get(position)));
                     notesKey.remove(notesKey.indexOf(filteredList.get(position).getNoteID()));
                     notesAdapter.notifyDataSetChanged();
-                    confirmationDialog(position,userNote,deletednoteId);
+                    confirmationDialog(position, userNote, deletednoteId);
 
                 }
             };
 
-    public void confirmationDialog(final int position,final UserNote userNote,final String deletedNoteId) {
+    public void confirmationDialog(final int position, final UserNote userNote, final String deletedNoteId) {
         SweetAlertDialog.DARK_STYLE = true;
         // 2. Confirmation message
         new SweetAlertDialog(getContext(), SweetAlertDialog.WARNING_TYPE)
@@ -268,9 +300,9 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful())
-                                    Toast.makeText(getContext(), "done", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(context, "done", Toast.LENGTH_LONG).show();
                                 else
-                                    Toast.makeText(getContext(), "error", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(context, "error", Toast.LENGTH_LONG).show();
                             }
                         });
                         sDialog.dismissWithAnimation();
@@ -280,20 +312,20 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
                     @Override
                     public void onClick(SweetAlertDialog sDialog) {
                         sDialog.dismissWithAnimation();
-                        allNotes.add(position,userNote);
+                        allNotes.add(position, userNote);
                         notesAdapter.notifyDataSetChanged();
                     }
                 })
                 .show();
     }
 
-    public void updaeNote(UserNote updatedNote ,String key){
+    public void updaeNote(UserNote updatedNote, String key) {
         databaseNotesReference.child(key).setValue(updatedNote).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     Toast.makeText(getActivity(), "Data updated successfully", Toast.LENGTH_LONG).show();
-                    ((NavigationHost)getActivity()).navigateTo(new HomeFragment(),false);
+                    ((NavigationHost) getActivity()).navigateTo(new HomeFragment(), false);
                 } else {
                     Toast.makeText(getActivity(), "error", Toast.LENGTH_LONG).show();
                 }
@@ -311,8 +343,8 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             filteredList = new ArrayList<>();
-            if (constraint == null || constraint.length() == 0 || constraint =="") {
-                Log.d("xe","filtered list empty"+ exampleListFull.get(1).getNoteTitle());
+            if (constraint == null || constraint.length() == 0 || constraint == "") {
+                Log.d("xe", "filtered list empty" + exampleListFull.get(1).getNoteTitle());
                 filteredList.addAll(exampleListFull);
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
@@ -326,6 +358,7 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
             results.values = filteredList;
             return results;
         }
+
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             allNotes.clear();
@@ -333,4 +366,54 @@ public class HomeFragment extends Fragment implements NotesAdapter.RecyclerViewC
             notesAdapter.notifyDataSetChanged();
         }
     };
+
+    public void loadDialog() {
+        pDialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(getResources().getColor(R.color.colorPrimary));
+        pDialog.setTitleText("Loading ...");
+        pDialog.show();
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.download_all) {
+            downloadAll();
+        }
+    }
+
+    private void downloadAll() {
+        loadDialog();
+        for (int i = 0; i < allNotes.size(); i++) {
+            String title, desc, date, id, totalAmount, currentAmount;
+            title = allNotes.get(i).getNoteTitle();
+            desc = allNotes.get(i).getNoteDesc();
+            date = allNotes.get(i).getNoteDate();
+            id = allNotes.get(i).getNoteID();
+            totalAmount = allNotes.get(i).getTotalAmount();
+            currentAmount = allNotes.get(i).getCurrentAmount();
+            boolean isLiked = allNotes.get(i).isLiked();
+            String key = allNotes.get(i).getNoteID();
+            UserNote userNote = new UserNote(title, desc, date, key, totalAmount, currentAmount, true);
+            updaeNote(userNote, key);
+            database = FavNotesDatabase.getInstance(getActivity());
+            database.favNotesDao().insertNotes(new FavNotes(title, desc, date, totalAmount, currentAmount, id))
+                    .subscribeOn(Schedulers.computation())
+                    .subscribe(new CompletableObserver() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
+
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            pDialog.dismissWithAnimation();
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.d("room", "onError:" + e.getMessage());
+                        }
+                    });
+        }
+    }
 }

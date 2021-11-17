@@ -1,5 +1,11 @@
 package com.example.secretnotes;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.SurfaceControl;
@@ -27,6 +33,11 @@ public class ContainerActivity extends AppCompatActivity implements View.OnClick
         binding.addBtn.setOnClickListener(this);
         binding.favouritBtn.setOnClickListener(this);
         binding.homeBtn.setOnClickListener(this);
+
+        if (!isNetworkAvailable()){
+            FavouritFragment fragment = new FavouritFragment();
+            navigateTo(fragment,false);
+        }
     }
 
     @Override
@@ -61,5 +72,29 @@ public class ContainerActivity extends AppCompatActivity implements View.OnClick
         if (addToBackstack)
             transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager cm = (ConnectivityManager) ContainerActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm == null) return false;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            NetworkCapabilities cap = cm.getNetworkCapabilities(cm.getActiveNetwork());
+            if (cap == null) return false;
+            return cap.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Network[] networks = cm.getAllNetworks();
+            for (Network n: networks) {
+                NetworkInfo nInfo = cm.getNetworkInfo(n);
+                if (nInfo != null && nInfo.isConnected()) return true;
+            }
+        } else {
+            NetworkInfo[] networks = cm.getAllNetworkInfo();
+            for (NetworkInfo nInfo: networks) {
+                if (nInfo != null && nInfo.isConnected()) return true;
+            }
+        }
+
+        return false;
     }
 }
